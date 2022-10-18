@@ -87,7 +87,7 @@ router.post(
     try {
       let profile = await Profile.findOne({ user: req.user.id });
       if (profile) {
-        // Update 
+        // Update profile
         profile = await Profile.findOneAndUpdate(
           { user: req.user.id },
           { $set: profileFields },
@@ -96,7 +96,8 @@ router.post(
         return res.json(profile)
       }
       profile = new Profile(profileFields);
-      await Profile.save()
+      await Profile.save();
+      // send profile as response
       res.json(profile)
 
     } catch (err) {
