@@ -22,20 +22,3 @@ const connectDB = async () => {
 
 module.exports = connectDB;
 
-
-// const MongoClient = require("mongodb").MongoClient;
-// const client = new MongoClient(config.get('mongoURI'));
-// // console.log(client)
-
-// const connectDB = () => {
-
-//     try {
-//         // Connect to the MongoDB cluster
-//         client.connect();
-//         console.log('Connected successfully to server');
-
-//     }
-//     catch (e) {
-//         console.log("Database is not connected");
-//     }
-// }
