@@ -7,19 +7,20 @@ const Profile = require('../../models/Profile');
 const User = require('../../models/User');
 
 // @route   GET api/profile/me
-// @desc    Get current users profile by passing token
+// @desc    Get current users profile
 // @access  Private
-router.get('/me', auth, async (req, res) => {
+router.get('/me', async (req, res) => {
   try {
-    const profile = await Profile.findOne({ user: req.user.id }).populate(
-      'user',
-      ['name', 'avatar']
-    );
 
-    if (!profile) {
+    // Here using populate method to get particular field from db
+    // In this case : It will pick only name and avatar from User Schema
+    // and leave other properties
+    const profiles = await Profile.find().populate('user', ['name', 'avatar']);
+
+    if (!profiles) {
       return res.status(400).json({ msg: 'There is no profile for this user' });
     }
-    res.json(profile);
+    res.json(profiles);
   } catch (err) {
     console.log(err.message);
     res.send(500).send('Server Error');
@@ -110,5 +111,57 @@ router.post(
     }
   }
 );
+
+// @route   GET api/profile/user/:user_id
+// @desc    Get profile by user ID
+// @access  Public
+router.get('/user/:user_id', async (req, res) => {
+  try {
+
+    // Here using populate method to get particular field from db
+    // In this case : It will pick only name and avatar from User Schema
+    // and leave other properties
+    const profile = await Profile.findOne({user :req.params.user_id}).populate('user', ['name', 'avatar']);
+
+    if (!profile) {
+      return res.status(400).json({ msg: 'Profile Not Found' });
+    }
+    res.json(profile);
+  } catch (err) {
+    console.log(err.message);
+    if(err.kind == 'ObjectId')
+    {
+      return res.status(400).json({ msg: 'Profile Not Found' });
+    }
+    res.send(500).send('Server Error');
+  }
+});
+
+
+// @route   Delete api/profile
+// @desc    Delete profile,user & posts
+// @access  Private
+router.delete('/api/profile', auth ,async (req, res) => {
+  try {
+    // @todo - To remove users posts
+    // It will remove user profile
+    await Profile.findOneAndRemove({user :req.user_id})
+    
+    // It will remove user 
+    await User.findOneAndRemove({_id :req.user_id})
+
+    res.json({msg:"User Deleted"});
+  } catch (err) {
+    console.log(err.message);
+    if(err.kind == 'ObjectId')
+    {
+      return res.status(400).json({ msg: 'Profile Not Found' });
+    }
+    res.send(500).send('Server Error');
+  }
+});
+
+
+
 
 module.exports = router;

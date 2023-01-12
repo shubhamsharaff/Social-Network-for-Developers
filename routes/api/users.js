@@ -15,6 +15,7 @@ router.post('/', [
     check('password', 'Please enter a password with 6 or more characters').isLength({ min: 6 })
 
 ], async (req, res) => {
+    console.log('working')
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         // only enter to this condition  if there is error  
@@ -29,7 +30,7 @@ router.post('/', [
         if (user) {
             return res.status(400).json({ errors: [{ msg: 'User already exists' }] });
         }
-        //Get users gravatar
+        // Get users gravatar
         // we are going to pass user email to gravatar url with someoptions like size 
         let avatar = gravatar.url(email, {
             s: '200',
@@ -49,7 +50,7 @@ router.post('/', [
         user.password = await bcrypt.hash(password, salt); // Hashing the password and storing it to user
         await user.save(); // will save user in db 
 
-        // return jaonwebtoken
+        // return jsonwebtoken
         const payload = {
             user: {
                 id: user.id // it will get generated id from database for particular user  
@@ -64,7 +65,7 @@ router.post('/', [
                 res.json({ token })
             }
         );
-        // res.send('User registered');
+        res.send('User registered');
     } catch (err) {
         console.log(err.message());
         res.status(500).send('Server error');
